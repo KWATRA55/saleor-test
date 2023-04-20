@@ -1,5 +1,5 @@
-query ProductFilterByName($first: Int = 12, $after: String) {
-  products(first: $first, channel: "default-channel", after: $after) {
+query ProductFilterByName($first: Int = 12, $after: String, $filter: ProductFilterInput!) {
+  products(filter: $filter, first: $first, channel: "default-channel", after: $after) {
     edges {
       node {
         id

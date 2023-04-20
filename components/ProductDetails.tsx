@@ -1,7 +1,11 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { Product } from "@/saleor/api";
 import { formatAsMoney } from '@/lib';
+import { useLocalStorage } from "react-use";
+import {
+  useProductAddVariantToCartMutation,
+  Product
+} from "@/saleor/api";
 
 import {
   VariantSelector
@@ -26,6 +30,8 @@ interface Props {
 
 export const ProductDetails = ({ product }: Props) => {
   const router = useRouter();
+  const [token] = useLocalStorage('token');
+  const [addProductToCart] = useProductAddVariantToCartMutation();
 
   const queryVariant = process.browser
     ? router.query.variant?.toString()
@@ -33,27 +39,50 @@ export const ProductDetails = ({ product }: Props) => {
   const selectedVariantID = queryVariant || product?.variants![0]!.id!;
   const selectedVariant = product?.variants!.find((variant) => variant?.id === selectedVariantID);
 
+  const onAddToCart = async () => {
+    await addProductToCart({
+      variables: { checkoutToken: token, variantId: selectedVariantID },
+    });
+    router.push("/cart");
+  };
+
   return (
     <div className={styles.columns}>
       <div className={styles.image.aspect}>
-        <img src={product?.media![0]?.url} className={styles.image.content} />
+        <img
+          src={product?.media![0]?.url}
+          className={styles.image.content}
+        />
       </div>
 
       <div className="space-y-8">
         <div>
-          <h1 className={styles.details.title}>{product?.name}</h1>
-          <p className={styles.details.category}>{product?.category?.name}</p>
+          <h1 className={styles.details.title}>
+            {product?.name}
+          </h1>
+          <p className={styles.details.category}>
+            {product?.category?.name}
+          </p>
         </div>
 
         <article className={styles.details.description}>
           {product?.description}
         </article>
 
-        <VariantSelector variants={product?.variants || []} id={product.id} selectedVariantID={selectedVariantID} />      </div>
+        <VariantSelector variants={product?.variants || []} id={product.id} selectedVariantID={selectedVariantID} />
 
         <div className="text-2xl font-bold">
           {formatAsMoney(selectedVariant?.pricing?.price?.gross.amount)}
         </div>
+
+        <button
+          onClick={onAddToCart}
+          type="submit"
+          className="primary-button"
+        >
+          Add to cart
+        </button>
+      </div>
     </div>
   );
-};
+}

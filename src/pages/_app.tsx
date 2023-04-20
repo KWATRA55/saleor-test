@@ -1,14 +1,36 @@
-import type { AppProps } from 'next/app'
-import { ApolloProvider } from '@apollo/client';
+import type { AppProps } from "next/app";
+import { ApolloProvider } from "@apollo/client";
 
-import '../styles/globals.css';
+import { useEffect } from "react";
+import { useLocalStorage } from "react-use";
 
-import { apolloClient } from '@/lib';
+import "../styles/globals.css";
 
-export default function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <ApolloProvider client={apolloClient}>
-      <Component {...pageProps} />
-    </ApolloProvider>
-  )
-}
+import { apolloClient } from "@/lib";
+import { useCheckoutCreateMutation } from "@/saleor/api";
+
+const Root = ({ Component, pageProps }: AppProps) => {
+  const [token, setToken] = useLocalStorage("token");
+  const [checkoutCreate, { data, loading }] = useCheckoutCreateMutation();
+
+  useEffect(() => {
+    async function doCheckout() {
+      const { data } = await checkoutCreate();
+      const token = data?.checkoutCreate?.checkout?.token;
+
+      setToken(token);
+    }
+
+    doCheckout();
+  }, []);
+
+  return <Component {...pageProps} token={token} />;
+};
+
+const MyApp = (props: AppProps) => (
+  <ApolloProvider client={apolloClient}>
+    <Root {...props} />
+  </ApolloProvider>
+);
+
+export default MyApp;
