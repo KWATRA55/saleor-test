@@ -25689,14 +25689,25 @@ export type _Service = {
   sdl?: Maybe<Scalars['String']>;
 };
 
+export type CheckoutCreateMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CheckoutCreateMutation = { __typename?: 'Mutation', checkoutCreate?: { __typename?: 'CheckoutCreate', checkout?: { __typename?: 'Checkout', token: any } | null, errors: Array<{ __typename?: 'CheckoutError', field?: string | null, code: CheckoutErrorCode }> } | null };
+
+export type ProductByIdQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type ProductByIdQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: string, name: string, description?: any | null, media?: Array<{ __typename?: 'ProductMedia', url: string }> | null, category?: { __typename?: 'Category', name: string } | null, variants?: Array<{ __typename?: 'ProductVariant', id: string, name: string, pricing?: { __typename?: 'VariantPricingInfo', price?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number } } | null } | null }> | null } | null };
+
 export type ProductFilterByNameQueryVariables = Exact<{
-  filter: ProductFilterInput;
-  sortBy?: InputMaybe<ProductOrder>;
+  first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type ProductFilterByNameQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', totalCount?: number | null, edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename?: 'Product', id: string, name: string, thumbnail?: { __typename?: 'Image', url: string } | null, category?: { __typename?: 'Category', name: string } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor?: string | null, endCursor?: string | null } } | null };
+export type ProductFilterByNameQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', totalCount?: number | null, edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename?: 'Product', id: string, name: string, thumbnail?: { __typename?: 'Image', url: string } | null, category?: { __typename?: 'Category', name: string } | null, pricing?: { __typename?: 'ProductPricingInfo', priceRange?: { __typename?: 'TaxedMoneyRange', start?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number } } | null, stop?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number } } | null } | null } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor?: string | null, endCursor?: string | null } } | null };
 
 export type ProductGetThreeElementsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -25709,15 +25720,103 @@ export type ProductSearchTShirtQueryVariables = Exact<{ [key: string]: never; }>
 export type ProductSearchTShirtQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename?: 'Product', id: string, name: string, thumbnail?: { __typename?: 'Image', url: string } | null, category?: { __typename?: 'Category', name: string } | null } }> } | null };
 
 
-export const ProductFilterByNameDocument = gql`
-    query ProductFilterByName($filter: ProductFilterInput!, $sortBy: ProductOrder, $after: String) {
-  products(
-    first: 12
-    channel: "default-channel"
-    filter: $filter
-    sortBy: $sortBy
-    after: $after
+export const CheckoutCreateDocument = gql`
+    mutation CheckoutCreate {
+  checkoutCreate(
+    input: {channel: "default-channel", email: "customer@example.com", lines: []}
   ) {
+    checkout {
+      token
+    }
+    errors {
+      field
+      code
+    }
+  }
+}
+    `;
+export type CheckoutCreateMutationFn = Apollo.MutationFunction<CheckoutCreateMutation, CheckoutCreateMutationVariables>;
+
+/**
+ * __useCheckoutCreateMutation__
+ *
+ * To run a mutation, you first call `useCheckoutCreateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckoutCreateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkoutCreateMutation, { data, loading, error }] = useCheckoutCreateMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCheckoutCreateMutation(baseOptions?: Apollo.MutationHookOptions<CheckoutCreateMutation, CheckoutCreateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CheckoutCreateMutation, CheckoutCreateMutationVariables>(CheckoutCreateDocument, options);
+      }
+export type CheckoutCreateMutationHookResult = ReturnType<typeof useCheckoutCreateMutation>;
+export type CheckoutCreateMutationResult = Apollo.MutationResult<CheckoutCreateMutation>;
+export type CheckoutCreateMutationOptions = Apollo.BaseMutationOptions<CheckoutCreateMutation, CheckoutCreateMutationVariables>;
+export const ProductByIdDocument = gql`
+    query ProductByID($id: ID!) {
+  product(id: $id, channel: "default-channel") {
+    id
+    name
+    description
+    media {
+      url
+    }
+    category {
+      name
+    }
+    variants {
+      id
+      name
+      pricing {
+        price {
+          gross {
+            amount
+          }
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useProductByIdQuery__
+ *
+ * To run a query within a React component, call `useProductByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useProductByIdQuery(baseOptions: Apollo.QueryHookOptions<ProductByIdQuery, ProductByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ProductByIdQuery, ProductByIdQueryVariables>(ProductByIdDocument, options);
+      }
+export function useProductByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProductByIdQuery, ProductByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ProductByIdQuery, ProductByIdQueryVariables>(ProductByIdDocument, options);
+        }
+export type ProductByIdQueryHookResult = ReturnType<typeof useProductByIdQuery>;
+export type ProductByIdLazyQueryHookResult = ReturnType<typeof useProductByIdLazyQuery>;
+export type ProductByIdQueryResult = Apollo.QueryResult<ProductByIdQuery, ProductByIdQueryVariables>;
+export const ProductFilterByNameDocument = gql`
+    query ProductFilterByName($first: Int = 12, $after: String) {
+  products(first: $first, channel: "default-channel", after: $after) {
     edges {
       node {
         id
@@ -25727,6 +25826,20 @@ export const ProductFilterByNameDocument = gql`
         }
         category {
           name
+        }
+        pricing {
+          priceRange {
+            start {
+              gross {
+                amount
+              }
+            }
+            stop {
+              gross {
+                amount
+              }
+            }
+          }
         }
       }
     }
@@ -25753,13 +25866,12 @@ export const ProductFilterByNameDocument = gql`
  * @example
  * const { data, loading, error } = useProductFilterByNameQuery({
  *   variables: {
- *      filter: // value for 'filter'
- *      sortBy: // value for 'sortBy'
+ *      first: // value for 'first'
  *      after: // value for 'after'
  *   },
  * });
  */
-export function useProductFilterByNameQuery(baseOptions: Apollo.QueryHookOptions<ProductFilterByNameQuery, ProductFilterByNameQueryVariables>) {
+export function useProductFilterByNameQuery(baseOptions?: Apollo.QueryHookOptions<ProductFilterByNameQuery, ProductFilterByNameQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<ProductFilterByNameQuery, ProductFilterByNameQueryVariables>(ProductFilterByNameDocument, options);
       }
